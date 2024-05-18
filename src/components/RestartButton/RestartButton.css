@@ -1,0 +1,34 @@
+.restart__container{
+    display: flex;
+    align-items: center;
+}
+
+.restart__button{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 20px;
+
+    border-radius: 4px;
+    background-color: #357637;
+    color: #fff;
+    transition: background 0.5s ease-in-out;
+}
+
+.restart__icon {
+    fill: white;
+    transition: transform 0.2s ease;
+}
+
+.restart__button:hover{
+    background-color: #4CAF50;
+}
+
+.restart__button:hover .restart__icon {
+    transform: rotate(180deg);
+}
+
+.restart__icon{
+    color: black;
+}
