@@ -6,63 +6,76 @@ import getRandomValue from '../utils/randomValue';
 const useGameLogic = () => {
 
     const [randomValue, setRandomValue] = useState(getRandomValue(initialSet))
-    const [leftDeck, setLeftDeck] = useState(shuffle(initialSet));
-    const [centerDeck, setCenterDeck] = useState([]);
-    const [rightDeck, setRightDeck] = useState([]);
+    const [decks, setDecks] = useState({
+        leftDeck: shuffle(initialSet),
+        centerDeck: [],
+        rightDeck: []
+    });
     const [isWinner, setIsWinner] = useState(false)
 
     const checkWinCondition = useCallback(() => {
+        const { leftDeck, centerDeck, rightDeck } = decks;
         const leftLast = leftDeck[leftDeck.length - 1];
         const centerLast = centerDeck[centerDeck.length - 1];
         const rightLast = rightDeck[rightDeck.length - 1];
 
-        if (leftLast && centerLast && rightLast && 
-            leftLast.value === randomValue && 
-            centerLast.value === randomValue && 
+        if (leftLast && centerLast && rightLast &&
+            leftLast.value === randomValue &&
+            centerLast.value === randomValue &&
             rightLast.value === randomValue) {
-                setIsWinner(true)
+            setIsWinner(true);
         }
-    }, [leftDeck, centerDeck, rightDeck, randomValue]);
+    }, [decks, randomValue]);
 
-    const moveCard = useCallback((fromDeck, setFromDeck, toDeck, setToDeck) => {
+    const moveCard = useCallback((fromDeckName, toDeckName) => {
         if (isWinner) return;
-        if (fromDeck.length > 0) {
+
+        setDecks(prevDecks => {
+            const fromDeck = prevDecks[fromDeckName];
+            if (fromDeck.length === 0) return prevDecks;
+
             const cardToMove = fromDeck[fromDeck.length - 1];
-            setFromDeck(fromDeck.slice(0, -1));
-            setToDeck([...toDeck, cardToMove]);
-        }
+            const newFromDeck = fromDeck.slice(0, -1);
+            const newToDeck = [...prevDecks[toDeckName], cardToMove];
+
+            return {
+                ...prevDecks,
+                [fromDeckName]: newFromDeck,
+                [toDeckName]: newToDeck
+            };
+        });
     }, [isWinner]);
 
-    const handleDeckClick = useCallback((deck) => {
+    const handleDeckClick = useCallback((deckName) => {
         return () => {
-            if (deck === leftDeck) {
-                moveCard(leftDeck, setLeftDeck, centerDeck, setCenterDeck);
-            } else if (deck === centerDeck) {
-                moveCard(centerDeck, setCenterDeck, rightDeck, setRightDeck);
+            if (deckName === 'leftDeck') {
+                moveCard('leftDeck', 'centerDeck');
+            } else if (deckName === 'centerDeck') {
+                moveCard('centerDeck', 'rightDeck');
             } else {
-                moveCard(rightDeck, setRightDeck, leftDeck, setLeftDeck);
+                moveCard('rightDeck', 'leftDeck');
             }
         };
-    }, [leftDeck, centerDeck, rightDeck, moveCard]);
+    }, [moveCard]);
 
     const resetGame = useCallback(() => {
-        setLeftDeck(shuffle(initialSet));
-        setCenterDeck([]);
-        setRightDeck([]);
+        setDecks({
+            leftDeck: shuffle(initialSet),
+            centerDeck: [],
+            rightDeck: []
+        });
         setRandomValue(getRandomValue(initialSet));
-        setIsWinner(false)
+        setIsWinner(false);
     }, []);
 
     useEffect(() => {
         checkWinCondition();
-    }, [leftDeck, centerDeck, rightDeck, checkWinCondition]);
+    }, [decks, checkWinCondition]);
 
     return {
         isWinner,
         randomValue,
-        leftDeck,
-        centerDeck,
-        rightDeck,
+        decks,
         handleDeckClick,
         resetGame
     };
