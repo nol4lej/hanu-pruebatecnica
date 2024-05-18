@@ -9,11 +9,9 @@ const Game = () => {
     const {
         isWinner,
         randomValue,
-        leftDeck,
-        centerDeck,
-        rightDeck,
+        decks,
         handleDeckClick,
-        resetGame,
+        resetGame
     } = useGameLogic();
 
     return (
@@ -24,9 +22,9 @@ const Game = () => {
             </div>
             <div className="decks__container">
                 <div className='decks__content'>
-                    <Deck cards={leftDeck} onClick={handleDeckClick(leftDeck)} />
-                    <Deck cards={centerDeck} onClick={handleDeckClick(centerDeck)} />
-                    <Deck cards={rightDeck} onClick={handleDeckClick(rightDeck)} />
+                    <Deck cards={decks.leftDeck} onClick={handleDeckClick('leftDeck')} />
+                    <Deck cards={decks.centerDeck} onClick={handleDeckClick('centerDeck')} />
+                    <Deck cards={decks.rightDeck} onClick={handleDeckClick('rightDeck')} />
                 </div>
             </div>
             {
